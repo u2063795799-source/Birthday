@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Baby kish kish 💋</title>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;700&family=Quicksand:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --rose: #e8879c; --mauve: #c2678e; --text-dark: #3d1c2e; --text-soft: #b07090;
+}
+body {
+  font-family: 'Quicksand', sans-serif;
+  background: linear-gradient(145deg, #fff0f5 0%, #fce4ec 40%, #fad4e0 100%);
+  display: flex; align-items: center; justify-content: center;
+  height: 100vh; overflow: hidden; position: relative;
+}
+#bg { position: fixed; inset: 0; pointer-events: none; z-index: 1; }
+.card {
+  position: relative; z-index: 10;
+  background: rgba(255, 249, 249, 0.8);
+  backdrop-filter: blur(20px);
+  border: 1.5px solid rgba(232, 135, 156, .3);
+  border-radius: 36px;
+  padding: 3rem 2rem;
+  width: min(400px, 90vw);
+  text-align: center;
+  box-shadow: 0 24px 70px rgba(194, 103, 142, .2);
+}
+h2 { font-family: 'Dancing Script', cursive; color: var(--rose); font-size: 1.5rem; margin-bottom: 0.5rem; }
+h1 { font-family: 'Dancing Script', cursive; font-size: 2.8rem; color: var(--text-dark); margin-bottom: 1.5rem; }
+input {
+  width: 100%; padding: 0.8rem; border-radius: 50px;
+  border: 2px solid rgba(232, 135, 156, .3);
+  font-family: 'Dancing Script', cursive; font-size: 1.3rem;
+  text-align: center; outline: none; margin-bottom: 1rem;
+}
+button {
+  width: 100%; padding: 0.8rem; border-radius: 50px;
+  background: linear-gradient(135deg, var(--rose), var(--mauve));
+  color: white; border: none; font-family: 'Dancing Script', cursive;
+  font-size: 1.2rem; cursor: pointer; transition: 0.3s;
+}
+button:hover { transform: scale(1.03); }
+.veil {
+  position: fixed; inset: 0; background: #fce4ec; z-index: 1000;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: 0.8s;
+}
+.veil.on { opacity: 1; pointer-events: all; }
+</style>
+</head>
+<body>
+<audio id="mus" src="E:\birthday\Elvis Presley - Can't Help Falling In Love.mp3" preload="auto".mp3></audio>
+<canvas id="bg"></canvas>
+<div class="veil" id="veil"><h1 style="color: #e8879c;">Opening your letters... 💌</h1></div>
+
+<div class="card">
+  <h2>Happy Birthday!</h2>
+  <h1>Baby kish kish 💋</h1>
+  <input type="text" id="pw" placeholder="Enter magic words..." autocomplete="off">
+  <button onclick="go()">Open with love 💌</button>
+</div>
+
+<script>
+function go() {
+  const v = document.getElementById('pw').value.trim().toLowerCase();
+  if (v === 'kish kish') {
+    sessionStorage.setItem('playMusic', 'true'); // Flag for the next page
+    document.getElementById('veil').classList.add('on');
+    setTimeout(() => { window.location.href = 'letters.html'; }, 1000);
+  } else {
+    alert("Try 'kish kish' baby! 🥺");
+  }
+}
+
+// Background Hearts
+const cv = document.getElementById('bg'), cx = cv.getContext('2d');
+let hs = [];
+function resize(){ cv.width=innerWidth; cv.height=innerHeight; }
+window.addEventListener('resize', resize); resize();
+class Heart {
+  constructor() { this.x=Math.random()*cv.width; this.y=cv.height+20; this.sz=15+Math.random()*20; this.vy=0.5+Math.random(); }
+  draw() { cx.font=this.sz+'px serif'; cx.fillText('❤️',this.x,this.y); this.y-=this.vy; if(this.y<-50) this.y=cv.height+50; }
+}
+for(let i=0; i<30; i++) hs.push(new Heart());
+(function loop(){ cx.clearRect(0,0,cv.width,cv.height); hs.forEach(h=>h.draw()); requestAnimationFrame(loop); })();
+</script>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Letters for you 💌</title>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;700&family=Caveat:wght@400;600&family=Quicksand:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root { --rose: #e8879c; --mauve: #c2678e; --cream: #fff9f9; --text: #3d1c2e; --soft: #9e6078; }
+body {
+  min-height: 100vh; font-family: 'Quicksand', sans-serif;
+  background: linear-gradient(145deg, #fff0f5 0%, #fce4ec 50%, #fad4e0 100%);
+  color: var(--text); overflow-x: hidden;
+}
+#bg { position:fixed; inset:0; pointer-events:none; z-index:1; opacity:.4; }
+#confetti { position:fixed; inset:0; pointer-events:none; z-index:900; }
+.hdr { position:relative; z-index:10; text-align:center; padding: 3rem 1rem 1rem; }
+.hdr h1 { font-family:'Dancing Script', cursive; font-size: clamp(2.5rem, 6vw, 3.5rem); color: var(--text); }
+.board { position: relative; z-index: 10; max-width: 1200px; margin: 0 auto; padding: 2rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 20px; }
+.env-inner {
+  background: white; border-radius: 16px; padding: 1.5rem 1rem; text-align: center;
+  cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: 0.3s;
+}
+.env-inner:hover { transform: translateY(-10px) scale(1.05); box-shadow: 0 15px 30px rgba(194,103,142,0.3); }
+.overlay {
+  position:fixed; inset:0; z-index:1000; background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(8px); display:none; align-items:center; justify-content:center; padding:1rem;
+}
+.modal {
+  background: var(--cream); border-radius: 26px; padding: 2rem;
+  max-width: 450px; width:100%; text-align: center; position: relative;
+}
+.frame {
+  margin: 0 auto 1.2rem; width: 100%; aspect-ratio: 4/3;
+  background: #eee; border: 8px solid white; border-radius: 4px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1); overflow: hidden;
+}
+.frame img { width: 100%; height: 100%; object-fit: cover; }
+.note { font-family:'Dancing Script', cursive; font-size: 1.5rem; line-height: 1.4; margin-bottom: 1.5rem; }
+.close-btn {
+  background: var(--rose); color:white; border:none; border-radius:50px;
+  padding: 0.7rem 2rem; cursor:pointer; font-family: 'Quicksand'; font-weight: bold;
+}
+.music {
+  position:fixed; bottom:1.2rem; right:1.2rem; z-index:1100;
+  background:white; border-radius:50px; padding:.6rem 1.2rem;
+  display:flex; align-items:center; gap:.6rem; cursor:pointer; box-shadow:0 4px 10px rgba(0,0,0,0.1);
+}
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+<canvas id="confetti"></canvas>
+<header class="hdr"><h1>Your Birthday Letters 💌</h1></header>
+<div class="board" id="board"></div>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="frame"><img id="mImg" src="" alt="Memory"></div>
+    <p class="note" id="mNote"></p>
+    <button class="close-btn" onclick="closeModal()">Close 💋</button>
+  </div>
+</div>
+
+<div class="music" onclick="toggleMusic()">
+  <span id="mlbl">Tap to Play Music 🎵</span>
+</div>
+
+<audio id="mus" loop>
+  <source src="E:\birthday\Elvis Presley - Can't Help Falling In Love.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+// --- CONFIGURE YOUR LETTERS HERE ---
+const LETTERS = [
+  { img: 'image 1.jpg', note: "My Candy Man..\n You make my day sweet..🩷" },
+  { img: 'image 2.jpeg', note: "I'm always Happy with you 👩‍❤️‍👨" },
+  { img: 'image 3.jpg', note: "Say Amol baby....🧀" },
+  { img: 'image 4.jpg', note: "We look cute together No...\n Always baby 🫂" },
+  { img: 'image 5.jpg', note: "Are you guys dating ?\n No we are not 🫣" },
+  { img: 'image 6.jpg', note: "Can we go shooping ?\n Always Baby..🫶" },
+  { img: 'image 7.jpeg', note: "Baby shark to.. ro.. to...🦈" },
+  { img: 'image 8.jpg', note: "Bura na Mano Holi Hai...🫟" },
+  { img: 'image 9.jpg', note: "Baby me aapko khalu ??😈 \n Hnnnnnnn😂" },
+  { img: 'iamge 10.jpeg', note: "Let's go there..\n but this time as a couple👫" },
+  { img: 'image 11.jpg', note: "Idhar Chala me Udhar Chala..\n Jane kaha mein kidhar chala..⛸️" },
+  { img: 'image 12.jpg', note: "Ek photo le le ?\n yes babu...📸" },
+  { img: 'image 13.jpg', note: "You love to play guitar..\n and I love you ❤️" },
+  { img: 'image 14.jpg', note: "I love your smile,\n be happy Always...🐻" },
+  { img: 'image 15.jpg', note: "Thanks for being you, Baby 💓" },
+  { img: 'image 16.jpg', note: "Kirish ka gana sunega ??? sunega kirish ka gana..🎶" },
+  { img: 'image 17.jpeg', note: "I remeber you looking at me here....🦋" },
+  { img: 'image 18.jpg', note: "2 weirdo's together 🐒" },
+  { img: 'image 19.jpeg', note: "Aila... jelly fish 🪼" },
+  { img: 'image 20.jpeg', note: "You'r just a baby...👶\n bach pan me hi tai kar diya tha ky, ki hakor banuga?? 🧑‍💻" },
+  { img: 'image 21.jpg', note: "Halloween, we are ghosts..👻" },
+  { img: 'image 22.jpeg', note: "Ek acha photo nhi hai humara, baby what is this...?🎞️" },
+  { img: 'image 23.jpeg', note: "castle with my prince 😹" },
+  { img: 'iamge 24.jpg', note: "Sunrise dekhane chale ?\n ok baby 🌅" },
+  { img: 'iamge 25.jpeg', note: "Happy Birthday My Baby🎂, Love you sooooo much...🩷" }
+];
+
+const board = document.getElementById('board');
+for(let i=0; i<25; i++) {
+  const data = LETTERS[i] || LETTERS[0];
+  const el = document.createElement('div');
+  el.className = 'env-inner';
+  el.innerHTML = `<span>Letter ${i+1}</span><br><span style="font-size:2rem">💌</span>`;
+  el.onclick = () => {
+    document.getElementById('mImg').src = data.img;
+    document.getElementById('mNote').innerText = data.note;
+    document.getElementById('overlay').style.display = 'flex';
+  };
+  board.appendChild(el);
+}
+
+function closeModal() { document.getElementById('overlay').style.display = 'none'; }
+
+const mus = document.getElementById('mus');
+function toggleMusic() {
+  if (mus.paused) { mus.play(); document.getElementById('mlbl').innerText = "Playing... 🎵"; }
+  else { mus.pause(); document.getElementById('mlbl').innerText = "Music Paused 🎵"; }
+}
+
+// Background Hearts logic
+const hc=document.getElementById('bg'), hx=hc.getContext('2d');
+function resizeH(){ hc.width=innerWidth; hc.height=innerHeight; }
+window.addEventListener('resize', resizeH); resizeH();
+class H {
+  constructor(){ this.x=Math.random()*hc.width; this.y=hc.height+20; this.vy=0.5+Math.random(); }
+  draw(){ hx.fillText('❤️',this.x,this.y); this.y-=this.vy; if(this.y<-20) this.y=hc.height+20; }
+}
+const HS=Array.from({length:20},()=>new H());
+(function loop(){ hx.clearRect(0,0,hc.width,hc.height); HS.forEach(h=>h.draw()); requestAnimationFrame(loop); })();
+</script>
+</body>
+</html>
